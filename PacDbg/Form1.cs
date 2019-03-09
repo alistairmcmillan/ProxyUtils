@@ -1,4 +1,5 @@
-﻿using Jint;
+﻿using ICSharpCode.TextEditor;
+using Jint;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,7 @@ namespace PacDbg
         public Form1()
         {
             InitializeComponent();
+            textEditor1.SetHighlighting("JavaScript");
         }
 
         private int SearchBytePattern(byte[] pattern, byte[] bytes)
@@ -175,8 +177,12 @@ namespace PacDbg
                         int line;
                         if (Int32.TryParse(lineNumber, out line))
                         {
-                            textEditor1.HighlightActiveLine = true;
-                            textEditor1.GotoLine(line - 1);
+                                TextLocation start = new TextLocation(0, line);
+                                var lineSegment = textEditor1.Document.GetLineSegment(line);
+                                TextLocation end = new TextLocation(lineSegment.Length, line);
+                                textEditor1.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
+                                textEditor1.ActiveTextAreaControl.Caret.Position = start;
+                                textEditor1.ActiveTextAreaControl.TextArea.ScrollToCaret();
                         }
                     }
 
@@ -313,8 +319,14 @@ namespace PacDbg
                             int line;
                             if (Int32.TryParse(lineNumber, out line))
                             {
-                                textEditor1.HighlightActiveLine = true;
-                                textEditor1.GotoLine(line - 1);
+                                //    textEditor1.HighlightActiveLine = true;
+                                //    textEditor1.GotoLine(line - 1);
+                                TextLocation start = new TextLocation(0, line);
+                                var lineSegment = textEditor1.Document.GetLineSegment(line);
+                                TextLocation end = new TextLocation(lineSegment.Length, line);
+                                textEditor1.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
+                                textEditor1.ActiveTextAreaControl.Caret.Position = start;
+                                textEditor1.ActiveTextAreaControl.TextArea.ScrollToCaret();
                             }
                         }
                     }
@@ -382,7 +394,7 @@ namespace PacDbg
 
                 if (!string.IsNullOrEmpty(filename))
                 {
-                    using (StreamReader reader = href.Utils.EncodingTools.OpenTextFile(filename))
+                    using (StreamReader reader = new StreamReader(filename, Encoding.ASCII))
                     {
                         if (reader.CurrentEncoding.GetType() != typeof(System.Text.ASCIIEncoding))
                         {
@@ -435,8 +447,14 @@ namespace PacDbg
                     int line;
                     if (Int32.TryParse(lineNumber, out line))
                     {
-                        textEditor1.HighlightActiveLine = true;
-                        textEditor1.GotoLine(line - 1);
+//                        textEditor1.HighlightActiveLine = true;
+//                        textEditor1.GotoLine(line - 1);
+                        TextLocation start = new TextLocation(0, line);
+                        var lineSegment = textEditor1.Document.GetLineSegment(line);
+                        TextLocation end = new TextLocation(lineSegment.Length, line);
+                        textEditor1.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
+                        textEditor1.ActiveTextAreaControl.Caret.Position = start;
+                        textEditor1.ActiveTextAreaControl.TextArea.ScrollToCaret();
                     }
                 }
             }

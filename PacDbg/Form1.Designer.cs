@@ -40,7 +40,7 @@
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.textBoxURL = new System.Windows.Forms.ToolStripTextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.textEditor1 = new Storm.TextEditor.TextEditor();
+            this.textEditor1 = new ICSharpCode.TextEditor.TextEditorControl();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
@@ -172,61 +172,11 @@
             // 
             // textEditor1
             // 
-            this.textEditor1.ActiveView = Storm.TextEditor.Editor.ActiveView.BottomRight;
-            this.textEditor1.AutomaticLanguageDetection = false;
-            this.textEditor1.BracketBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(224)))), ((int)(((byte)(204)))));
-            this.textEditor1.BracketBold = false;
-            this.textEditor1.BracketBorderColor = System.Drawing.Color.Transparent;
-            this.textEditor1.BracketItalic = false;
-            this.textEditor1.BracketStrikethrough = false;
-            this.textEditor1.BracketUnderline = false;
-            this.textEditor1.BreakpointBackColor = System.Drawing.Color.DarkRed;
-            this.textEditor1.BreakpointForeColor = System.Drawing.Color.White;
-            this.textEditor1.CollapsedBackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
-            this.textEditor1.CopyAsRTF = true;
-            this.textEditor1.CurrentLanguage = Storm.TextEditor.Languages.XmlLanguage.JavaScript;
-            this.textEditor1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textEditor1.EOLMarkerColor = System.Drawing.Color.ForestGreen;
-            this.textEditor1.ExpansionBackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(238)))), ((int)(((byte)(244)))));
-            this.textEditor1.ExpansionSymbolColor = System.Drawing.Color.FromArgb(((int)(((byte)(85)))), ((int)(((byte)(85)))), ((int)(((byte)(85)))));
-            this.textEditor1.FileName = "";
-            this.textEditor1.FontName = "Consolas";
-            this.textEditor1.GutterMarginColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.textEditor1.GutterMarginWidth = 15;
-            this.textEditor1.HighlightActiveLine = false;
-            this.textEditor1.HighlightedLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(236)))), ((int)(((byte)(242)))));
-            this.textEditor1.InactiveSelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(235)))), ((int)(((byte)(241)))));
-            this.textEditor1.InactiveSelectionBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(248)))));
-            this.textEditor1.KeepTabs = false;
-            this.textEditor1.LineNumberBackColor = System.Drawing.SystemColors.Window;
-            this.textEditor1.LineNumberBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(145)))), ((int)(((byte)(175)))));
-            this.textEditor1.LineNumberForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(145)))), ((int)(((byte)(175)))));
+            this.textEditor1.IsReadOnly = false;
             this.textEditor1.Location = new System.Drawing.Point(0, 0);
-            this.textEditor1.LockCursorUpdate = false;
             this.textEditor1.Name = "textEditor1";
-            this.textEditor1.ParseOnPaste = false;
-            this.textEditor1.RowHoverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(246)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
-            this.textEditor1.RowPadding = 0;
-            this.textEditor1.Saved = false;
-            this.textEditor1.ScopeBackColor = System.Drawing.Color.Transparent;
-            this.textEditor1.ScopeIndicatorColor = System.Drawing.Color.Transparent;
-            this.textEditor1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(173)))), ((int)(((byte)(214)))), ((int)(((byte)(255)))));
-            this.textEditor1.SelectionBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(235)))), ((int)(((byte)(255)))));
-            this.textEditor1.ShowEOLMarker = false;
-            this.textEditor1.ShowGutterMargin = true;
-            this.textEditor1.ShowLineNumbers = true;
-            this.textEditor1.ShowScopeIndicator = true;
-            this.textEditor1.ShowWhitespace = false;
             this.textEditor1.Size = new System.Drawing.Size(747, 266);
-            this.textEditor1.SmoothScroll = false;
-            this.textEditor1.SplitView = false;
-            this.textEditor1.SplitViewHorizontalEdgeDistance = -4;
-            this.textEditor1.SplitViewVerticalEdgeDistance = -4;
-            this.textEditor1.TabGuideColor = System.Drawing.Color.FromArgb(((int)(((byte)(233)))), ((int)(((byte)(233)))), ((int)(((byte)(233)))));
             this.textEditor1.TabIndex = 19;
-            this.textEditor1.TabSpaces = 4;
-            this.textEditor1.UseDottedMarginBorder = false;
-            this.textEditor1.WhitespaceColor = System.Drawing.SystemColors.ControlDark;
             // 
             // listView1
             // 
@@ -364,7 +314,7 @@
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
         private System.Windows.Forms.ToolStripTextBox textBoxURL;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private Storm.TextEditor.TextEditor textEditor1;
+        private ICSharpCode.TextEditor.TextEditorControl textEditor1;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label Proxy;
