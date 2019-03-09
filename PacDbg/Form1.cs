@@ -1,5 +1,7 @@
 ﻿using ICSharpCode.TextEditor;
 using Jint;
+using Jint.Parser;
+using Jint.Runtime.Debugger;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -48,6 +50,8 @@ namespace PacDbg
         delegate bool IsInNetDelegate(string host, string pattern, string mask);
         delegate int dnsDomainLevelsDelegate(string host);
         delegate bool shExpMatchDelegate(string str, string shexp);
+
+        private StepMode stepMode;
 
         string lastStatement = string.Empty;
         public Form1()
@@ -162,33 +166,36 @@ namespace PacDbg
         /// <param name="sender"></param>
         /// <param name="e"></param>
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-        void jint_Step(object sender, Jint.Debugger.DebugInformation e)
+        private StepMode jint_Step(object sender, DebugInformation e)
         {
-            if (!e.CurrentStatement.Source.Code.StartsWith("FindProxyForURL"))
+            if (e.CurrentStatement.Location.Source != null)
             {
-                listBox1.Invoke(new Action(delegate
+                if (!e.CurrentStatement.Location.Source.StartsWith("FindProxyForURL"))
                 {
-                    listBox1.Items.Add(string.Format("{0}: {1}\n", e.CurrentStatement.Source, e.CurrentStatement.Source.Code));
-                    listBox1.SelectedIndex = listBox1.Items.Count - 1;
-                    string source = e.CurrentStatement.Source.ToString();
-                    if (source.Contains(" "))
+                    listBox1.Invoke(new Action(delegate
                     {
-                        string lineNumber = source.Split(' ')[1];
-                        int line;
-                        if (Int32.TryParse(lineNumber, out line))
+                        listBox1.Items.Add(string.Format("{0}: {1}\n", e.CurrentStatement.Location.Source, e.CurrentStatement.Location.Source));
+                        listBox1.SelectedIndex = listBox1.Items.Count - 1;
+                        string source = e.CurrentStatement.Location.Source;
+                        if (source.Contains(" "))
                         {
+                            string lineNumber = source.Split(' ')[1];
+                            int line;
+                            if (Int32.TryParse(lineNumber, out line))
+                            {
                                 TextLocation start = new TextLocation(0, line);
                                 var lineSegment = textEditor1.Document.GetLineSegment(line);
                                 TextLocation end = new TextLocation(lineSegment.Length, line);
                                 textEditor1.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
                                 textEditor1.ActiveTextAreaControl.Caret.Position = start;
                                 textEditor1.ActiveTextAreaControl.TextArea.ScrollToCaret();
+                            }
                         }
-                    }
 
-                }));
+                    }));
+                }
             }
-            
+            return stepMode;
         }
 
         /// <summary>
@@ -215,28 +222,27 @@ namespace PacDbg
             dnsDomainLevelsDelegate dnsDomainLevels = PacExtensions.dnsDomainLevels;
             shExpMatchDelegate shExpMatch = PacExtensions.shExpMatch;
 
-            JintEngine jint = new JintEngine()
-                .SetDebugMode(true)
-                .SetFunction("isInNet", IsInNet)
-                .SetFunction("localHostOrDomainIs", localHostOrDomainIs)
-                .SetFunction("myIpAddress", myIpAddress)
-                .SetFunction("isResolvable", isResolvable)
-                .SetFunction("dateRange", dateRange)
-                .SetFunction("weekdayRange", weekdayRange)
-                .SetFunction("timeRange", timeRange)
-                .SetFunction("isPlainHostName", isPlainHostName)
-                .SetFunction("dnsDomainIs", dnsDomainIs)
-                .SetFunction("dnsResolve", dnsResolve)
-                .SetFunction("alert", alert)
-                .SetFunction("dnsDomainLevels", dnsDomainLevels)
-                .SetFunction("shExpMatch", shExpMatch);
+            Engine jint = new Engine(options => options.DebugMode())
+                .SetValue("isInNet", IsInNet)
+                .SetValue("localHostOrDomainIs", localHostOrDomainIs)
+                .SetValue("myIpAddress", myIpAddress)
+                .SetValue("isResolvable", isResolvable)
+                .SetValue("dateRange", dateRange)
+                .SetValue("weekdayRange", weekdayRange)
+                .SetValue("timeRange", timeRange)
+                .SetValue("isPlainHostName", isPlainHostName)
+                .SetValue("dnsDomainIs", dnsDomainIs)
+                .SetValue("dnsResolve", dnsResolve)
+                .SetValue("alert", alert)
+                .SetValue("dnsDomainLevels", dnsDomainLevels)
+                .SetValue("shExpMatch", shExpMatch);
 
             try
             {
                 jint.Step += jint_Step;
                 textEditor1.Text = script;
 
-                var result = jint.Run(script);
+                var result = jint.Execute(script);
 
                 executionHistory.Clear();
                 listBox1.Invoke(new Action(delegate
@@ -263,15 +269,15 @@ namespace PacDbg
                 else
                 {
                     PacExtensions.CounterReset();
-                    result = jint.Run(string.Format("FindProxyForURL(\"{0}\",\"{1}\")", uri.ToString(), uri.Host));
+                    result = jint.Execute(string.Format("FindProxyForURL(\"{0}\",\"{1}\")", uri.ToString(), uri.Host));
 
-                    Trace.WriteLine(result);
+                    Trace.WriteLine(result.GetCompletionValue().ToString());
                     textBoxProxy.Invoke(new Action(delegate
                     {
                         listView1.Items.Add(string.Format("IsInNet Count: {0} Total Duration: {1} ms", PacExtensions.IsInNetCount, PacExtensions.IsInNetDuration.Milliseconds));
                         listView1.Items.Add(string.Format("DnsDomainIs Count: {0} Total Duration: {1} ms", PacExtensions.DnsDomainIsCount, PacExtensions.DnsDomainIsDuration.Milliseconds));
 
-                        textBoxProxy.Text = result.ToString();
+                        textBoxProxy.Text = result.GetCompletionValue().ToString();
                         foreach (string s in PacExtensions.EvaluationHistory)
                         {
                             listView1.Items.Add(s, 0);
@@ -283,7 +289,7 @@ namespace PacDbg
 
             }
 
-            catch (Jint.Native.JsException ex)
+            catch (Jint.Runtime.JavaScriptException ex)
             {
                 listBox1.Invoke(new Action(delegate
                 {
@@ -301,7 +307,7 @@ namespace PacDbg
                     listView1.Items.Add(msg, 2);
                 }));
             }
-            catch (JintException ex)
+            catch (ParserException ex)
             {
                 listBox1.Invoke(new Action(delegate
                 {
@@ -432,6 +438,7 @@ namespace PacDbg
         private void toolStripButtonRun_Click(object sender, EventArgs e)
         {
             toolStripButtonRun.Enabled = false;
+            listView1.Focus(); // TODO Better fix for "Cross-thread operation not valid" when cursor is in texteditor
             listView1.Items.Clear();
             worker.RunWorkerAsync();
         }
